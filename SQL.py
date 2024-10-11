@@ -8,7 +8,7 @@ class CRUD():
         # Conecta ao banco de dados de forma assíncrona
         await database.connect()
 
-    async def create(self, table, col1, col2, col3, col4, col5, col6='', col7=''):
+    async def create(self, table, col1='', col2='', col3='', col4='', col5='', col6='', col7=''):
         '''
         Insere um novo registro na tabela especificada.
         
