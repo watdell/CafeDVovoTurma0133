@@ -6,7 +6,7 @@ from asyncio import run
 from localizer import localize
 
 crud = CRUD()
-
+#sdsdsdsddsd
 st.set_page_config(layout='wide')
 
 st.markdown('<style>div.block-container{padding-top:2rem;}</style>', unsafe_allow_html=True)
@@ -105,3 +105,5 @@ with col3:
 
     # Display the plot in Streamlit
     #st.pyplot(fig=fig1)
+    #sdfsdfsdfsdfsdfsdf
+    print("hello world")
