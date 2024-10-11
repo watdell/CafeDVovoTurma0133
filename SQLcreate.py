@@ -12,7 +12,7 @@ async def criar():
     #query = """CREATE TABLE if not exists CLIENTE (INSERIR OS CAMPOS)"""
     #await database.execute(query=query)
     #Codigo para Adicionar Foreigh Key, após o último campo iserir o codigo
-    # FOREIGN KEY(idpessoa) REFERENCES CADASTROS_DE_PESSOAS(idpessoa)
+    # FOREIGN KEY(idpessoa) REFgiERENCES CADASTROS_DE_PESSOAS(idpessoa)
 
     query = """CREATE TABLE if not exists CADASTROS_DE_PESSOAS (idpessoa INTEGER PRIMARY KEY, email VARCHAR(255), datadecadastro DATE, nome VARCHAR(60))"""
     await database.execute(query=query)

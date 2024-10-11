@@ -107,3 +107,4 @@ with col3:
     #st.pyplot(fig=fig1)
     #sdfsdfsdfsdfsdfsdf
     print("hello world")
+    print("hello world2")
