@@ -134,7 +134,12 @@ if select == 'Física':
                 if not campos_ok:
                     st.warning(mensagem)
                 else:
-                    st.success(mensagem)
+                    try:
+                        data_nascimento_formatada =  datetime.strptime(nascimento, '%d-%m-%Y').date()
+                        crud.insert('estrangeiro', nome=nome, email=email, tel=tel, nascimento=data_nascimento_formatada, data_cadastro=data_formatada, pais=pais, cep=cep, estado=estado, cidade=cidade, bairro=bairro, logradouro=logradouro, numero=numero, complemento=complemento, doc_inter=doc_inter, descricao_es=descricao_es)
+                        st.success("Estrangeiro cadastrado com sucesso!")
+                    except Exception as e:
+                        st.error(f"Ocorreu um erro ao cadastrar: {e}")
 
 elif select == 'Jurídica':
     with col1:
@@ -144,9 +149,14 @@ elif select == 'Jurídica':
         cnpj = st.text_input('', key='cnpj')
         descricao = st.text_input('', key='desc')
         if st.button('CADASTRAR', key='cadjur'):
-            campos_ok, mensagem = verifica_campos(nome, email, tel, pais, cep, estado, cidade, bairro, logradouro, numero, complemento, select=select, tipo=None, cnpj=cnpj, descricao=descricao)
+            campos_ok, mensagem = verifica_campos(nome, email, tel, nascimento, pais, cep, estado, cidade, bairro, logradouro, numero, complemento, select=select, tipo=None, cnpj=cnpj, descricao=descricao)
             if not campos_ok:
                 st.warning(mensagem)
             else:
-                st.success(mensagem)
+                try:
+                    data_nascimento_formatada =  datetime.strptime(nascimento, '%d-%m-%Y').date()
+                    crud.insert('p_juridica', nome=nome, email=email, tel=tel, nascimento=data_nascimento_formatada, data_cadastro=data_formatada, pais=pais, cep=cep, estado=estado, cidade=cidade, bairro=bairro, logradouro=logradouro, numero=numero, complemento=complemento, cnpj=cnpj, descricao=descricao)
+                    st.success("Pessoa jurídica cadastrada com sucesso!")
+                except Exception as e:
+                    st.error(f"Ocorreu um erro ao cadastrar: {e}")
 # to continue

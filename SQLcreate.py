@@ -56,8 +56,8 @@ async def criar():
         numero TEXT NOT NULL,
         complemento TEXT NOT NULL,
         tipo TEXT,
-        pessoa_id INTEGER NOT NULL,
-        FOREIGN KEY (pessoa_id) REFERENCES pessoa (pessoa_id)
+        id_pessoa INTEGER NOT NULL,
+        FOREIGN KEY (id_pessoa) REFERENCES pessoa (pessoa_id)
         ON DELETE CASCADE
         ON UPDATE NO ACTION
 );
@@ -70,11 +70,12 @@ async def criar():
     # TABELA FUNCIONARIOS .
     query = """
         CREATE TABLE IF NOT EXISTS funcionario (
-        funcionario_id INTEGER PRIMARY KEY,
+        pessoa_id INTEGER PRIMARY KEY,
+        cpf TEXT NOT NULL,
         cargo TEXT NOT NULL,
         salario REAL NOT NULL,
         matricula TEXT NOT NULL,
-        FOREIGN KEY (funcionario_id) REFERENCES pessoa (pessoa_id)
+        FOREIGN KEY (id_pessoa) REFERENCES pessoa (pessoa_id)
         ON DELETE CASCADE
         ON UPDATE NO ACTION
     );
@@ -87,9 +88,9 @@ async def criar():
     # TABELA FISICA .
     query = """
         CREATE TABLE IF NOT EXISTS p_fisica (
-        id INTEGER PRIMARY KEY,
+        id_pessoa INTEGER PRIMARY KEY,
         cpf_rg TEXT NOT NULL UNIQUE,
-        FOREIGN KEY (id) REFERENCES pessoa (pessoa_id)
+        FOREIGN KEY (id_pessoa) REFERENCES pessoa (pessoa_id)
         ON DELETE CASCADE
         ON UPDATE NO ACTION
     );
@@ -101,9 +102,9 @@ async def criar():
     # TABELA JURIDICA . 
     query = """
         CREATE TABLE IF NOT EXISTS p_juridica (
-        id INTEGER PRIMARY KEY,
+        id_pessoa INTEGER PRIMARY KEY,
         cnpj TEXT NOT NULL UNIQUE,
-        FOREIGN KEY (id) REFERENCES pessoa (pessoa_id)
+        FOREIGN KEY (id_pessoa) REFERENCES pessoa (pessoa_id)
         ON DELETE CASCADE
         ON UPDATE NO ACTION
     );
@@ -115,9 +116,10 @@ async def criar():
     # TABELA ESTRANGEIRO . 
     query = """
         CREATE TABLE IF NOT EXISTS estrangeiro (
-        id INTEGER PRIMARY KEY,
+        id_pessoa INTEGER PRIMARY KEY,
         passaporte TEXT NOT NULL UNIQUE,
-        FOREIGN KEY (id) REFERENCES pessoa (pessoa_id)
+        descricao TEXT,
+        FOREIGN KEY (id_pessoa) REFERENCES pessoa (pessoa_id)
         ON DELETE CASCADE
         ON UPDATE NO ACTION
     );
@@ -129,11 +131,11 @@ async def criar():
     # TABELA Fornecedor .
     query = """
         CREATE TABLE IF NOT EXISTS fornecedor (
-        fornecedor_id INTEGER PRIMARY KEY,
+        id_pessoa INTEGER PRIMARY KEY,
         nome_empresa TEXT NOT NULL,
         documento TEXT NOT NULL,
         endereco TEXT NOT NULL,
-        FOREIGN KEY (fornecedor_id) REFERENCES pessoa (pessoa_id)
+        FOREIGN KEY (id_pessoa) REFERENCES pessoa (pessoa_id)
         ON DELETE CASCADE
         ON UPDATE NO ACTION
     );
