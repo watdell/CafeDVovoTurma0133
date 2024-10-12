@@ -47,17 +47,21 @@ async def criar():
     query = """
         CREATE TABLE IF NOT EXISTS endereco (
         endereco_id INTEGER PRIMARY KEY,
+        pais TEXT NOT NULL,
         cep TEXT NOT NULL,
         estado TEXT NOT NULL,
         cidade TEXT NOT NULL,
+        bairro TEXT NOT NULL,
         rua TEXT NOT NULL,
         numero TEXT NOT NULL,
         complemento TEXT NOT NULL,
+        tipo TEXT NOT NULL,
         pessoa_id INTEGER NOT NULL,
         FOREIGN KEY (pessoa_id) REFERENCES pessoa (pessoa_id)
         ON DELETE CASCADE
         ON UPDATE NO ACTION
-    );
+);
+
     """
     await database.execute(query=query)
 
