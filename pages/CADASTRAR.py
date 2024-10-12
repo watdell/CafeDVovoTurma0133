@@ -2,6 +2,7 @@ import streamlit as st
 from SQL import CRUD  # Importando as operações CRUD do módulo SQL
 from asyncio import run  # Importando a função run para lidar com chamadas assíncronas
 from setup import setup
+from utils.validacao_form import verifica_campos
 from random import randrange
 import requests
 
@@ -82,31 +83,35 @@ with col2:
     st.write("#")
 
     # Selectbox para tipo de pessoa
-    select = st.selectbox('', ['Fisica', 'Jurídica'], key='selec1',)
+    select = st.selectbox('', options = ['Física', 'Jurídica'], key='selec1',)
 
 # Lógica para "Fisica" e "Jurídica"
-if select == 'Fisica':
+if select == 'Física':
     with col1:
         st.markdown(f"<h2 style= 'color:Orange;padding-top: 25px;'>CPF: </h2>", unsafe_allow_html=True)
-        st.markdown(f"<h2 style= 'color:Orange;padding-top: 25px;'>CARGO: </h2>", unsafe_allow_html=True)
+        st.markdown(f"<h2 style= 'color:Orange;padding-top: 25px;'>TIPO: </h2>", unsafe_allow_html=True)
     with col2:
         cpf = st.text_input('', key='cpf')
-        select2 = st.selectbox('', ['Nenhum', 'Funcionário', 'Estrangeiros'], key='selec2')
+        select2 = st.selectbox('', ['Nenhum', 'Funcionário', 'Estrangeiro'], key='selec2')
 
     # Lógica para tipo de funcionário
     if select2 == 'Funcionário':
         with col1:
             st.markdown(f"<h2 style= 'color:Orange;padding-top: 25px;'>MATRÍCULA: </h2>", unsafe_allow_html=True)
-            st.markdown(f"<h2 style= 'color:Orange;padding-top: 25px;'>CARGO: </h2>", unsafe_allow_html=True)
+            st.markdown(f"<h2 style= 'color:Orange;padding-top: 25px;'>TIPO: </h2>", unsafe_allow_html=True)
             st.markdown(f"<h2 style= 'color:Orange;padding-top: 25px;'>SALÁRIO: </h2>", unsafe_allow_html=True)
         with col2:
             matricula = st.text_input('', key='matr')
             cargo = st.text_input('', key='carg')
             salario = st.text_input('', key='sala')
             if st.button('CADASTRAR', key='cadfun'):
-                pass
+                campos_ok, mensagem = verifica_campos(nome, email, tel, pais, cep, estado, cidade, bairro, logradouro, numero, complemento, select=select, cpf=cpf, tipo=select2, matricula=matricula, cargo=cargo, salario=salario)
+                if not campos_ok:
+                    st.warning(mensagem)
+                else:
+                    st.success(mensagem)
 
-    elif select2 == 'Estrangeiros':
+    elif select2 == 'Estrangeiro':
         with col1:
             st.markdown(f"<h2 style= 'color:Orange;padding-top: 25px;'>DOCUMENTO INTERNACIONAL:</h2>", unsafe_allow_html=True)
             st.markdown(f"<h2 style= 'color:Orange;padding-top: 25px;'>DESCRIÇÃO: </h2>", unsafe_allow_html=True)
@@ -114,7 +119,11 @@ if select == 'Fisica':
             doc_inter = st.text_input('', key='cnpj')
             descricao_es = st.text_input('', key='desc')
             if st.button('CADASTRAR', key='cadest'):
-                pass
+                campos_ok, mensagem = verifica_campos(nome, email, tel, pais, cep, estado, cidade, bairro, logradouro, numero, complemento, select=select, tipo = select2, doc_inter = doc_inter, descricao_es = descricao_es)
+                if not campos_ok:
+                    st.warning(mensagem)
+                else:
+                    st.success(mensagem)
 
 elif select == 'Jurídica':
     with col1:
@@ -124,4 +133,10 @@ elif select == 'Jurídica':
         cnpj = st.text_input('', key='cnpj')
         descricao = st.text_input('', key='desc')
         if st.button('CADASTRAR', key='cadjur'):
-            pass
+            campos_ok, mensagem = verifica_campos(nome, email, tel, pais, cep, estado, cidade, bairro, logradouro, numero, complemento, select=select, tipo=None, cnpj=cnpj, descricao=descricao)
+            if not campos_ok:
+                st.warning(mensagem)
+            else:
+                st.success(mensagem)
+
+#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
