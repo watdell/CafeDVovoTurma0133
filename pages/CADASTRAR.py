@@ -1,12 +1,19 @@
 import streamlit as st
 from SQL import CRUD  # Importando as operações CRUD do módulo SQL
-from asyncio import run  # Importando a função run para lidar com chamadas assíncronas
 from setup import setup
 from utils.validacao_form import verifica_campos
 from random import randrange
 import requests
+from datetime import datetime
 
 setup('CADASTRO')
+
+# Instanciando a classe CRUD
+crud = CRUD()
+
+data_e_hora_atual = datetime.now()
+data_atual = data_e_hora_atual.date()
+data_formatada = data_atual.strftime('%Y-%m-%d')
 
 # Função para gerar ID de lote
 def insertInto():
@@ -24,9 +31,6 @@ def buscar_endereco(cep):
         st.error("Erro ao buscar endereço. Verifique o CEP e tente novamente.")
         return None
 
-# Instanciando a classe CRUD
-crud = CRUD()
-
 col1, col2 = st.columns([0.8, 3])
 
 # Coluna para os títulos dos campos
@@ -34,6 +38,7 @@ with col1:
     st.markdown(f"<h2 style= 'color:Orange;padding-top: 25px;'>NOME: </h2>", unsafe_allow_html=True)
     st.markdown(f"<h2 style= 'color:Orange;padding-top: 25px;'>EMAIL: </h2>", unsafe_allow_html=True)
     st.markdown(f"<h2 style= 'color:Orange;padding-top: 25px;'>TELEFONE: </h2>", unsafe_allow_html=True)
+    st.markdown(f"<h2 style= 'color:Orange;padding-top: 25px;'>NASCIMENTO: </h2>", unsafe_allow_html=True)
     st.write("#")
     st.markdown(f"<h2 style= 'color:Orange;padding-top: 25px;'>PAÍS: </h2>", unsafe_allow_html=True)
     st.markdown(f"<h2 style= 'color:Orange;padding-top: 25px;'>CEP: </h2>", unsafe_allow_html=True)
@@ -51,6 +56,7 @@ with col2:
     nome = st.text_input('', key='name')
     email = st.text_input('', key='email')
     tel = st.text_input('', key='tel')
+    nascimento = st.text_input('', key='nasc')
     st.write("#")
     pais = st.text_input('', key='pais')
 
@@ -98,18 +104,23 @@ if select == 'Física':
     if select2 == 'Funcionário':
         with col1:
             st.markdown(f"<h2 style= 'color:Orange;padding-top: 25px;'>MATRÍCULA: </h2>", unsafe_allow_html=True)
-            st.markdown(f"<h2 style= 'color:Orange;padding-top: 25px;'>TIPO: </h2>", unsafe_allow_html=True)
+            st.markdown(f"<h2 style= 'color:Orange;padding-top: 25px;'>CARGO: </h2>", unsafe_allow_html=True)
             st.markdown(f"<h2 style= 'color:Orange;padding-top: 25px;'>SALÁRIO: </h2>", unsafe_allow_html=True)
         with col2:
             matricula = st.text_input('', key='matr')
             cargo = st.text_input('', key='carg')
             salario = st.text_input('', key='sala')
             if st.button('CADASTRAR', key='cadfun'):
-                campos_ok, mensagem = verifica_campos(nome, email, tel, pais, cep, estado, cidade, bairro, logradouro, numero, complemento, select=select, cpf=cpf, tipo=select2, matricula=matricula, cargo=cargo, salario=salario)
+                campos_ok, mensagem = verifica_campos(nome, email, tel, nascimento, pais, cep, estado, cidade, bairro, logradouro, numero, complemento, select=select, cpf=cpf, tipo=select2, matricula=matricula, cargo=cargo, salario=salario)
                 if not campos_ok:
                     st.warning(mensagem)
                 else:
-                    st.success(mensagem)
+                    try:
+                        data_nascimento_formatada =  datetime.strptime(nascimento, '%d-%m-%Y').date()
+                        crud.insert('funcionario', nome=nome, email=email, tel=tel, nascimento=data_nascimento_formatada, data_cadastro=data_formatada, pais=pais, cep=cep, estado=estado, cidade=cidade, bairro=bairro, logradouro=logradouro, numero=numero, complemento=complemento, cpf=cpf, matricula=matricula, cargo=cargo, salario=salario)
+                        st.success("Funcionário cadastrado com sucesso!")
+                    except Exception as e:
+                        st.error(f"Ocorreu um erro ao cadastrar: {e}")    
 
     elif select2 == 'Estrangeiro':
         with col1:
@@ -119,7 +130,7 @@ if select == 'Física':
             doc_inter = st.text_input('', key='cnpj')
             descricao_es = st.text_input('', key='desc')
             if st.button('CADASTRAR', key='cadest'):
-                campos_ok, mensagem = verifica_campos(nome, email, tel, pais, cep, estado, cidade, bairro, logradouro, numero, complemento, select=select, tipo = select2, doc_inter = doc_inter, descricao_es = descricao_es)
+                campos_ok, mensagem = verifica_campos(nome, email, tel, nascimento, pais, cep, estado, cidade, bairro, logradouro, numero, complemento, select=select, tipo = select2, doc_inter = doc_inter, descricao_es = descricao_es)
                 if not campos_ok:
                     st.warning(mensagem)
                 else:

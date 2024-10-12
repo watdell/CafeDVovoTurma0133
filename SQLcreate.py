@@ -32,7 +32,7 @@ async def criar():
         CREATE TABLE IF NOT EXISTS telefone (
         telefone_id INTEGER PRIMARY KEY,
         telefone TEXT NOT NULL,
-        tipo TEXT NOT NULL,
+        tipo TEXT,
         id_pessoa INTEGER NOT NULL,
         FOREIGN KEY (id_pessoa) REFERENCES pessoa (pessoa_id)
         ON DELETE CASCADE
@@ -55,7 +55,7 @@ async def criar():
         rua TEXT NOT NULL,
         numero TEXT NOT NULL,
         complemento TEXT NOT NULL,
-        tipo TEXT NOT NULL,
+        tipo TEXT,
         pessoa_id INTEGER NOT NULL,
         FOREIGN KEY (pessoa_id) REFERENCES pessoa (pessoa_id)
         ON DELETE CASCADE
