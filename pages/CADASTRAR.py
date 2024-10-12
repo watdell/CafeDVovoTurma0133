@@ -138,5 +138,3 @@ elif select == 'Jurídica':
                 st.warning(mensagem)
             else:
                 st.success(mensagem)
-
-#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
