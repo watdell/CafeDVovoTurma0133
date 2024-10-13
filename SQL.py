@@ -1,5 +1,7 @@
 import sqlite3
 import asyncio
+import streamlit as st
+import pandas as pd
 
 
 class CRUD:
@@ -7,6 +9,12 @@ class CRUD:
         # Conecta ao banco de dados SQLite
         self.conn = sqlite3.connect('cafevovo.db')
         self.cursor = self.conn.cursor()
+        
+    def close_connection(self):
+        """Fecha a conexão com o banco de dados."""
+        if self.conn:
+            self.conn.close()
+            self.conn = None
 
     def insert(self, table, **kwargs):
         '''
@@ -32,9 +40,12 @@ class CRUD:
 
                     self.cursor.execute("INSERT INTO funcionario (id_pessoa, cpf, matricula, cargo, salario) VALUES (?, ?, ?, ?, ?);", (last_id, kwargs.get('cpf'), kwargs.get('matricula'), kwargs.get('cargo'), kwargs.get('salario')))
                     self.conn.commit()
-                    
+                    st.success("Funcionário cadastrado com sucesso!")
                 except Exception as e:
+                    st.error(f"Ocorreu um erro ao cadastrar: {e}")
                     print(f"Ocorreu um erro ao cadastrar: {e}")
+                finally:
+                    pass  
             
             case 'estrangeiro':
                 try:
@@ -54,9 +65,12 @@ class CRUD:
 
                     self.cursor.execute("INSERT INTO estrangeiro (id_pessoa, passaporte, descricao) VALUES (?, ?, ?);", (last_id, kwargs.get('doc_inter'), kwargs.get('descricao_es')))
                     self.conn.commit()
-                    
+                    st.success("Pessoa estrangeira cadastrada com sucesso!")
                 except Exception as e:
+                    st.error(f"Ocorreu um erro ao cadastrar: {e}")
                     print(f"Ocorreu um erro ao cadastrar: {e}")
+                finally:
+                    pass 
                     
             case 'p_juridica':
                 try:
@@ -76,16 +90,408 @@ class CRUD:
 
                     self.cursor.execute("INSERT INTO p_juridica (id_pessoa, cnpj, descricao) VALUES (?, ?, ?);", (last_id, kwargs.get('cnpj'), kwargs.get('descricao')))
                     self.conn.commit()
-                    
+                    st.success("Pessoa jurídica cadastrada com sucesso!")
                 except Exception as e:
+                    st.error(f"Ocorreu um erro ao cadastrar: {e}")
                     print(f"Ocorreu um erro ao cadastrar: {e}")
+                finally:
+                    pass 
                     
             case _:
                 print("Tabela não encontrada")
                 return None
 
+    
+    def read_all_user_data(self, user_id):
+        query = """
+        SELECT 
+            pessoa.pessoa_id,
+            pessoa.nome,
+            pessoa.email,
+            telefone.telefone,
+            pessoa.data_nascimento,
+            endereco.pais,
+            endereco.cep,
+            endereco.estado,
+            endereco.cidade,
+            endereco.bairro,
+            endereco.rua,
+            endereco.numero,
+            endereco.complemento,
+            CASE 
+                WHEN funcionario.id_pessoa IS NOT NULL THEN 'funcionario'
+                WHEN estrangeiro.id_pessoa IS NOT NULL THEN 'estrangeiro'
+                WHEN p_juridica.id_pessoa IS NOT NULL THEN 'p_juridica'
+                ELSE 'nao_especializado'
+            END AS tipo_usuario,
+            funcionario.cpf,
+            funcionario.matricula,
+            funcionario.cargo,
+            funcionario.salario,
+            estrangeiro.passaporte,
+            estrangeiro.descricao,
+            p_juridica.cnpj,
+            p_juridica.descricao AS descricao_pj
+        FROM 
+            pessoa
+        LEFT JOIN 
+            funcionario ON pessoa.pessoa_id = funcionario.id_pessoa
+        LEFT JOIN 
+            estrangeiro ON pessoa.pessoa_id = estrangeiro.id_pessoa
+        LEFT JOIN 
+            p_juridica ON pessoa.pessoa_id = p_juridica.id_pessoa
+        LEFT JOIN 
+            telefone ON pessoa.pessoa_id = telefone.id_pessoa
+        LEFT JOIN 
+            endereco ON pessoa.pessoa_id = endereco.id_pessoa
+        WHERE 
+            pessoa.pessoa_id = ?;
+
+        """
+        try:
+            self.cursor.execute(query, (user_id,))
+            resultado = self.cursor.fetchone()  # Use fetchone se você espera apenas um resultado
+            return resultado
+        except Exception as e:
+            print(f"Ocorreu um erro: {e}")
+        finally:
+            pass
+    
+    
+    def join_by_type_id(self, tipo, id):
+        
+        query_funcionario = """
+        SELECT 
+            pessoa.pessoa_id,
+            pessoa.nome,
+            pessoa.email,
+            telefone.telefone,
+            pessoa.data_nascimento,
+            endereco.pais,
+            endereco.cep,
+            endereco.estado,
+            endereco.cidade,
+            endereco.bairro,
+            endereco.rua,
+            endereco.numero,
+            endereco.complemento,
+            funcionario.cpf,
+            funcionario.matricula,
+            funcionario.cargo,
+            funcionario.salario,
+            pessoa.data_cadastro
+        FROM 
+            pessoa
+        JOIN 
+            funcionario ON pessoa.pessoa_id = funcionario.id_pessoa
+        JOIN 
+            telefone ON pessoa.pessoa_id = telefone.id_pessoa
+        JOIN 
+            endereco ON pessoa.pessoa_id = endereco.id_pessoa
+        WHERE 
+            pessoa.pessoa_id = ?;
+        """
+
+        query_estrangeiro = """
+        SELECT 
+            pessoa.pessoa_id,
+            pessoa.nome,
+            pessoa.email,
+            telefone.telefone,
+            pessoa.data_nascimento,
+            endereco.pais,
+            endereco.cep,
+            endereco.estado,
+            endereco.cidade,
+            endereco.bairro,
+            endereco.rua,
+            endereco.numero,
+            endereco.complemento,
+            estrangeiro.passaporte,
+            estrangeiro.descricao,
+            pessoa.data_cadastro
+
+        FROM 
+            pessoa
+        JOIN 
+            estrangeiro ON pessoa.pessoa_id = estrangeiro.id_pessoa
+        JOIN 
+            telefone ON pessoa.pessoa_id = telefone.id_pessoa
+        JOIN 
+            endereco ON pessoa.pessoa_id = endereco.id_pessoa
+        WHERE 
+            pessoa.pessoa_id = ?;
+        """
+
+        query_p_juridica = """
+        SELECT 
+            pessoa.pessoa_id,
+            pessoa.nome,
+            pessoa.email,
+            telefone.telefone,
+            pessoa.data_nascimento,
+            endereco.pais,
+            endereco.cep,
+            endereco.estado,
+            endereco.cidade,
+            endereco.bairro,
+            endereco.rua,
+            endereco.numero,
+            endereco.complemento,
+            p_juridica.cnpj,
+            p_juridica.descricao,
+            pessoa.data_cadastro
+
+        FROM 
+            pessoa
+        JOIN 
+            p_juridica ON pessoa.pessoa_id = p_juridica.id_pessoa
+        JOIN 
+            telefone ON pessoa.pessoa_id = telefone.id_pessoa
+        JOIN 
+            endereco ON pessoa.pessoa_id = endereco.id_pessoa
+        WHERE 
+            pessoa.pessoa_id = ?;
+        """
+        query = ""
+        if tipo == 'funcionario':
+            query = query_funcionario
+        elif tipo == 'estrangeiro':
+            query = query_estrangeiro
+        elif tipo == 'p_juridica':
+            query = query_p_juridica
+        
+        self.cursor.execute(query, (id,))  
+        resultado = self.cursor.fetchone()
+        return resultado
+    
+    def join_all_users_information_by_type(self, tipo):
+        # Carrega os dados das tabelas
+        query_funcionario = """
+        SELECT 
+            pessoa.pessoa_id,
+            pessoa.nome,
+            pessoa.email,
+            telefone.telefone,
+            pessoa.data_nascimento,
+            endereco.pais,
+            endereco.cep,
+            endereco.estado,
+            endereco.cidade,
+            endereco.bairro,
+            endereco.rua,
+            endereco.numero,
+            endereco.complemento,
+            funcionario.cpf,
+            funcionario.matricula,
+            funcionario.cargo,
+            funcionario.salario,
+            pessoa.data_cadastro
+        FROM 
+            pessoa
+        JOIN 
+            funcionario ON pessoa.pessoa_id = funcionario.id_pessoa
+        JOIN 
+            telefone ON pessoa.pessoa_id = telefone.id_pessoa
+        JOIN 
+            endereco ON pessoa.pessoa_id = endereco.id_pessoa;
+        """
+
+        query_estrangeiro = """
+        SELECT 
+            pessoa.pessoa_id,
+            pessoa.nome,
+            pessoa.email,
+            telefone.telefone,
+            pessoa.data_nascimento,
+            endereco.pais,
+            endereco.cep,
+            endereco.estado,
+            endereco.cidade,
+            endereco.bairro,
+            endereco.rua,
+            endereco.numero,
+            endereco.complemento,
+            estrangeiro.passaporte,
+            estrangeiro.descricao,
+            pessoa.data_cadastro
+
+        FROM 
+            pessoa
+        JOIN 
+            estrangeiro ON pessoa.pessoa_id = estrangeiro.id_pessoa
+        JOIN 
+            telefone ON pessoa.pessoa_id = telefone.id_pessoa
+        JOIN 
+            endereco ON pessoa.pessoa_id = endereco.id_pessoa;
+        """
+
+        query_p_juridica = """
+        SELECT 
+            pessoa.pessoa_id,
+            pessoa.nome,
+            pessoa.email,
+            telefone.telefone,
+            pessoa.data_nascimento,
+            endereco.pais,
+            endereco.cep,
+            endereco.estado,
+            endereco.cidade,
+            endereco.bairro,
+            endereco.rua,
+            endereco.numero,
+            endereco.complemento,
+            p_juridica.cnpj,
+            p_juridica.descricao,
+            pessoa.data_cadastro
+
+        FROM 
+            pessoa
+        JOIN 
+            p_juridica ON pessoa.pessoa_id = p_juridica.id_pessoa
+        JOIN 
+            telefone ON pessoa.pessoa_id = telefone.id_pessoa
+        JOIN 
+            endereco ON pessoa.pessoa_id = endereco.id_pessoa;
+        """
+        query = ""
+        if tipo == 'funcionario':
+            query = query_funcionario
+        elif tipo == 'estrangeiro':
+            query = query_estrangeiro
+        elif tipo == 'p_juridica':
+            query = query_p_juridica
+        
+        return pd.read_sql_query(query, self.conn)
+    
+    def read(self, table, id, parameter='*'):
+        '''
+        Busca registros na tabela especificada.
+        
+        Parâmetros:
+        - table: Nome da tabela a ser consultada.
+        - parameter: Colunas específicas a serem buscadas, padrão é todas (*).
+        '''
+        query = ""
+        self.cursor.execute(query, (id,))  # Supondo que self.connection seja o seu objeto de conexão
+        resultado = self.cursor.fetchall()
+        self.conn.close()
+        
+    def update_user_information(self, pessoa_id, novos_dados):
+        print(novos_dados)
+        # Atualizando a tabela pessoa
+        update_pessoa = f"""
+        UPDATE pessoa
+        SET nome = '{novos_dados.get("Nome")}',
+            email = '{novos_dados.get("E-mail")}',
+            data_nascimento = '{novos_dados.get("Data de Nascimento")}'
+        WHERE pessoa_id = {pessoa_id};
+        """
+
+        # Atualizando a tabela telefone
+        update_telefone = f"""
+        UPDATE telefone
+        SET telefone = '{novos_dados.get("Telefone")}'
+        WHERE id_pessoa = {pessoa_id};
+        """
+
+        # Atualizando a tabela endereco
+        update_endereco = f"""
+        UPDATE endereco
+        SET pais = '{novos_dados.get("País")}',
+            cep = '{novos_dados.get("CEP")}',
+            estado = '{novos_dados.get("UF")}',
+            cidade = '{novos_dados.get("Cidade")}',
+            bairro = '{novos_dados.get("Bairro")}',
+            rua = '{novos_dados.get("Logradouro")}',
+            numero = '{novos_dados.get("Nº")}',
+            complemento = '{novos_dados.get("Complemento")}'
+        WHERE id_pessoa = {pessoa_id};
+        """
+
+         # Atualizando a tabela funcionario, estrangeiro ou p_juridica dependendo do caso
+        if novos_dados.get("CPF"):  # Exemplo: se for um funcionário
+            update_funcionario = f"""
+            UPDATE funcionario
+            SET cpf = '{novos_dados.get("CPF")}',
+                matricula = '{novos_dados.get("Matrícula")}',
+                cargo = '{novos_dados.get("Profissão")}',
+                salario = {novos_dados.get("Salário")}
+            WHERE id_pessoa = {pessoa_id};
+            """
+            try:
+                self.cursor.execute(update_funcionario)
+            except Exception as e:
+                st.error(f"Ocorreu um erro ao atualizar funcionário: {e}")
+            finally:
+                pass
+
+        elif novos_dados.get("CNPJ"):  # Exemplo: se for uma pessoa jurídica
+            update_pjuridica = f"""
+            UPDATE p_juridica
+            SET cnpj = '{novos_dados.get("CNPJ")}',
+                descricao = '{novos_dados.get("Descrição")}'
+            WHERE id_pessoa = {pessoa_id};
+            """
+            try:
+                self.cursor.execute(update_pjuridica)
+            except Exception as e:
+                st.error(f"Ocorreu um erro ao atualizar Pessoa jurídica: {e}")
+            finally:
+                pass
+            
+        elif novos_dados.get("Passaporte"):  # Exemplo: se for uma pessoa jurídica
+            update_pjuridica = f"""
+            UPDATE estrangeiro
+            SET passaporte = '{novos_dados.get("Passaporte")}',
+                descricao = '{novos_dados.get("Descrição")}'
+            WHERE id_pessoa = {pessoa_id};
+            """
+            try:
+                self.cursor.execute(update_pjuridica)
+            except Exception as e:
+                st.error(f"Ocorreu um erro ao atualizar pessoa estrangeira: {e}")
+            finally:
+                pass
+
+
+        # Executando as atualizações
+        try:
+            self.cursor.execute(update_pessoa)
+            self.cursor.execute(update_telefone)
+            self.cursor.execute(update_endereco)
+        except Exception as e:
+                st.error(f"Ocorreu um erro ao atualizar pessoa, telefone e endereço: {e}")
+        finally:
+            pass
+
+        # Confirma as mudanças
+        
+        try:
+            self.conn.commit()
+            st.success("Informações atualizadas com sucesso!")
+        except Exception as e:
+                st.error(f"Ocorreu um erro na hora de confirmar as mudanças: {e}")
+        finally:
+            pass
+        
+    def delete(self, table, column, id):
+        try:
+            query = f"DELETE FROM {table} WHERE {column} = {id}"
+            self.cursor.execute(query)
+            self.conn.commit()
+            st.success("Removido com sucesso!")
+        except Exception as e:
+            st.error(f"Ocorreu um erro ao remover: {e}")
+        finally:
+            pass 
+    
     def close(self):
         # Fecha a conexão com o banco de dados
         self.conn.close()
+    
+    def __del__(self):
+        """Método chamado quando o objeto é destruído."""
+        self.close_connection()
 
                

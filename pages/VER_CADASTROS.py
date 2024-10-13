@@ -1,0 +1,128 @@
+from setup import setup
+from SQL import CRUD
+from utils.db_conversao_campo_titulo import titulo
+import pandas as pd
+import streamlit as st
+
+# Configura o título da página
+setup('Gestão de Cadastros')
+
+crud = CRUD()
+
+clientes_pj = crud.join_all_users_information_by_type("p_juridica")
+estrangeiros = crud.join_all_users_information_by_type("estrangeiro")
+funcionarios = crud.join_all_users_information_by_type("funcionario")
+
+# Aplica estilo global para fundo e cores de texto
+st.markdown("""
+    <style>
+     h1, h2, h3 {
+        color: #8B4513 !important; /* Títulos e subtítulos marrom escuro */
+    }
+    </style>
+""", unsafe_allow_html=True)
+
+# Função para exibir as tabelas com botões de ação do sidebar
+# por padrão "todos" vem selecionado, entãos erá mostrado todos os cadastros
+def exibir_com_acoes(df, categoria):
+    for index, row in df.iterrows():
+        cols = st.columns(3)
+        for i, col in enumerate(df.columns):
+            if i < 6:
+                cols[0].write(f"**{titulo(col)}:** {row[col]}")
+            elif i < 12:
+                cols[1].write(f"**{titulo(col)}:** {row[col]}")
+            else:
+                cols[2].write(f"**{titulo(col)}:** {row[col]}")
+
+        button_cols = st.columns(11)
+
+        if 'pessoa_id' in row.index:
+            # Botão Atualizar
+            if button_cols[0].button(f"Atualizar", key=f"update_{categoria}_{index}"):
+                st.session_state[f"edit_mode_{index}"] = True  # Armazenando estado no session_state
+
+            # Checa se o modo de edição foi ativado
+            if st.session_state.get(f"edit_mode_{index}", False):
+                dados_gerais_usuario = crud.read_all_user_data(row['pessoa_id'])
+                tipo_usuario = dados_gerais_usuario[13]
+                dados_especificos_tipo_usuario = crud.join_by_type_id(tipo_usuario, row['pessoa_id'])
+
+                #st.success(dados_especificos_tipo_usuario)
+                
+                # Expandir o formulário para editar os dados
+                with st.expander("Formulário de Edição", expanded=True):
+                    if dados_especificos_tipo_usuario:
+                        d_frame = pd.DataFrame([dados_especificos_tipo_usuario])
+                        novos_dados = {}
+
+                        # Início do formulário
+                        with st.form(key=f"edit_form_{categoria}_{index}"):
+                            for _, edit_row in d_frame.iterrows():
+                                cols = st.columns(3)
+                                for i, col in enumerate(df.columns):
+                                    nome_campo = titulo(col)
+                                    if i < 6:
+                                        novo_valor = cols[0].text_input(f"**Campo {i + 1}:**", value=edit_row[i], key=f"{categoria}_{index}_edit_{i}")
+                                    elif i < 12:
+                                        novo_valor = cols[1].text_input(f"**Campo {i + 1}:**", value=edit_row[i], key=f"{categoria}_{index}_edit_{i}")
+                                    else:
+                                        novo_valor = cols[2].text_input(f"**Campo {i + 1}:**", value=edit_row[i], key=f"{categoria}_{index}_edit_{i}")
+                                    novos_dados[nome_campo] = novo_valor
+
+                            # Botão dentro do form que não causa reload
+                            submit_button = st.form_submit_button("Salvar")
+
+                            if submit_button:
+                                try:
+                                    crud.update_user_information(row['pessoa_id'], novos_dados)
+                                    st.success("Atualizado com sucesso!")
+                                    st.session_state[f"edit_mode_{index}"] = False  # Reseta o modo de edição
+                                    st.rerun()
+                                except Exception as e:
+                                    st.error(f"Erro ao atualizar informações: {e}")
+
+            # Botão Remover
+            if button_cols[1].button(f"Remover", key=f"remove_{categoria}_{row['pessoa_id']}"):
+                st.warning(f"Remover {row['nome']}")
+                crud.delete("pessoa", "pessoa_id", row['pessoa_id'])
+                st.rerun()
+        else:
+            st.warning("Coluna 'pessoa_id' não encontrada na linha.")
+
+        st.write("---")
+
+
+
+# Sidebar com filtros
+st.sidebar.header("Filtros")
+tipo_cadastro = st.sidebar.selectbox("Selecionar Tipo de Cadastro", ["Todos", "Clientes PJ", "Estrangeiros", "Funcionários"])
+
+# Exibição condicional de acordo com o filtro
+if tipo_cadastro == "Todos":
+    st.subheader("Clientes - Pessoas Jurídicas")
+    exibir_com_acoes(clientes_pj, 'Clientes PJ')
+
+    st.subheader("Estrangeiros")
+    exibir_com_acoes(estrangeiros, 'Estrangeiros')
+
+    st.subheader("Funcionários")
+    exibir_com_acoes(funcionarios, 'Funcionários')
+
+elif tipo_cadastro == "Clientes PJ":
+    st.subheader("Clientes - Pessoas Jurídicas")
+    exibir_com_acoes(clientes_pj, 'Clientes PJ')
+
+elif tipo_cadastro == "Estrangeiros":
+    st.subheader("Estrangeiros")
+    exibir_com_acoes(estrangeiros, 'Estrangeiros')
+
+elif tipo_cadastro == "Funcionários":
+    st.subheader("Funcionários")
+    exibir_com_acoes(funcionarios, 'Funcionários')
+
+# Botão de ação para adicionar novos cadastros
+st.sidebar.markdown("## Ações")
+if st.sidebar.button("Adicionar Novo Cadastro"):
+    st.write("Página de Cadastro em construção...")
+

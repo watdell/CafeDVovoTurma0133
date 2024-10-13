@@ -113,3 +113,361 @@
         query = f"DELETE FROM {table} WHERE {condition}"
         await database.execute(query=query)
 
+
+
+
+old code for ver_cadastros
+
+table_funcionarios = """
+<style>
+    .table_funcionarios {
+        width: 2000px;  /* Defina a largura total desejada */
+        border-collapse: collapse;
+    }
+    .table_funcionarios th, .table_funcionarios td {
+        border: 1px solid #ddd;
+        padding: 8px;
+    }
+    .table_funcionarios th {
+        background-color: #8B4513;
+        color: white;
+        size: 18px;
+    }
+    /* Definindo a largura de cada coluna */
+    .col-nome { width: 15%; }
+    .col-email { width: 20%; }
+    .col-telefone { width: 10%; }
+    .col-nascimento { width: 10%; }
+    .col-pais { width: 10%; }
+    .col-cep { width: 10%; }
+    .col-estado { width: 10%; }
+    .col-cidade { width: 10%; }
+    .col-bairro { width: 10%; }
+    .col-logradouro { width: 10%; }
+    .col-numero { width: 10%; }
+    .col-complemento { width: 10%; }
+    .col-cpf { width: 10%; }
+    .col-matricula { width: 10%; }
+    .col-cargo { width: 10%; }
+    .col-salario { width: 10%; }
+    .col-cadastro { width: 10%; }
+    /* Estilo para o contêiner com rolagem */
+    .scrollable {
+        overflow-x: auto;  /* Ativa a rolagem horizontal */
+        max-width: 100%;   /* Define a largura máxima do contêiner */
+        border: 0px solid #ddd;  /* Adiciona uma borda ao contêiner */
+        padding: 2px;  /* Adiciona um pouco de espaço interno */
+        border-radius: 5px;  /* Adiciona bordas arredondadas */
+    }
+    /* Adicionando a barra de rolagem personalizada */
+    .scrollable::-webkit-scrollbar {
+        height: 8px;  /* Altura da barra de rolagem */
+    }
+    .scrollable::-webkit-scrollbar-thumb {
+        background-color: #888;  /* Cor da barra de rolagem */
+        border-radius: 4px;  /* Borda arredondada da barra */
+    }
+    .scrollable::-webkit-scrollbar-thumb:hover {
+        background-color: #555;  /* Cor da barra de rolagem ao passar o mouse */
+    }
+</style>
+
+<div class='scrollable'>
+    <table class='table_funcionarios'>
+        <tr>
+            <th colspan=2>Ações</th>
+            <th>Nome</th>
+            <th>Email</th>
+            <th>Telefone</th>
+            <th>Nascimento</th>
+            <th>País</th>
+            <th>Cep</th>
+            <th>Estado</th>
+            <th>Cidade</th>
+            <th>Bairro</th>
+            <th>Logradouro</th>
+            <th>Número</th>
+            <th>Complemento</th>
+            <th>CPF</th>
+            <th>Matrícula</th>
+            <th>Cargo</th>
+            <th>Salário</th>
+            <th>Cadastro</th>
+        </tr>
+"""
+
+conn = conectar_banco()
+cursor = conn.cursor()
+cursor.execute(query1)
+resultado = cursor.fetchall()
+
+# Adiciona as linhas da tabela
+for linha in resultado:
+    table_funcionarios += f"<tr><td>Up</td><td>X</td>"
+    for i, coluna in enumerate(linha):
+        if i == 0:
+            continue
+        table_funcionarios += f"<td>{coluna}</td>"
+    table_funcionarios += "</tr>"
+
+table_funcionarios += """
+    </table>
+</div>
+"""
+
+# Aplica estilo global para fundo e cores de texto
+st.markdown("""
+    <style>
+     h1, h2, h3 {
+        color: #8B4513 !important; /* Títulos e subtítulos marrom escuro */
+    }
+    </style>
+""", unsafe_allow_html=True)
+
+st.subheader("Funcionários")
+# Renderiza a tabela no Streamlit
+st.markdown(table_funcionarios, unsafe_allow_html=True)
+conn.close()
+
+
+
+
+table_juridicos = """
+<style>
+    .table_juridicos {
+        width: 2000px;  /* Defina a largura total desejada */
+        border-collapse: collapse;
+    }
+    .table_juridicos th, .table_juridicos td {
+        border: 1px solid #ddd;
+        padding: 8px;
+    }
+    .table_juridicos th {
+        background-color: #8B4513;
+        color: white;
+    }
+    /* Definindo a largura de cada coluna */
+    .col-nome { width: 15%; }
+    .col-email { width: 20%; }
+    .col-telefone { width: 10%; }
+    .col-nascimento { width: 10%; }
+    .col-pais { width: 10%; }
+    .col-cep { width: 10%; }
+    .col-estado { width: 10%; }
+    .col-cidade { width: 10%; }
+    .col-bairro { width: 10%; }
+    .col-logradouro { width: 10%; }
+    .col-numero { width: 10%; }
+    .col-complemento { width: 10%; }
+    .col-cpf { width: 10%; }
+    .col-matricula { width: 10%; }
+    .col-cargo { width: 10%; }
+    .col-salario { width: 10%; }
+    .col-cadastro { width: 10%; }
+    /* Estilo para o contêiner com rolagem */
+    .scrollable {
+        overflow-x: auto;  /* Ativa a rolagem horizontal */
+        max-width: 100%;   /* Define a largura máxima do contêiner */
+        border: 0px solid #ddd;  /* Adiciona uma borda ao contêiner */
+        padding: 2px;  /* Adiciona um pouco de espaço interno */
+        border-radius: 5px;  /* Adiciona bordas arredondadas */
+    }
+    /* Adicionando a barra de rolagem personalizada */
+    .scrollable::-webkit-scrollbar {
+        height: 8px;  /* Altura da barra de rolagem */
+    }
+    .scrollable::-webkit-scrollbar-thumb {
+        background-color: #888;  /* Cor da barra de rolagem */
+        border-radius: 4px;  /* Borda arredondada da barra */
+    }
+    .scrollable::-webkit-scrollbar-thumb:hover {
+        background-color: #555;  /* Cor da barra de rolagem ao passar o mouse */
+    }
+</style>
+
+<div class='scrollable'>
+    <table class='table_juridicos'>
+        <tr>
+            <th colspan=2>Ações</th>
+            <th>Nome</th>
+            <th>Email</th>
+            <th>Telefone</th>
+            <th>Nascimento</th>
+            <th>País</th>
+            <th>Cep</th>
+            <th>Estado</th>
+            <th>Cidade</th>
+            <th>Bairro</th>
+            <th>Logradouro</th>
+            <th>Número</th>
+            <th>Complemento</th>
+            <th>CNPJ</th>
+            <th>Descrição</th>
+            <th>Cadastro</th>
+        </tr>
+"""
+
+conn = conectar_banco()
+cursor = conn.cursor()
+cursor.execute(query3)
+resultado = cursor.fetchall()
+
+
+# Adiciona as linhas da tabela
+for index, linha in enumerate(resultado):
+    table_juridicos += "<tr><td>"
+    # Adicionando botão HTML
+    table_juridicos += f"""
+    <button onclick="document.getElementById('btn_{index}').click();">
+        Botão {index}
+    </button>
+    <button id="btn_{index}" style="display: none;" onclick="fetch('/click/{index}');"></button>
+    """
+    table_juridicos += "</td><td>X</td>"
+
+    for i, coluna in enumerate(linha):
+        if i == 0:
+            continue
+        table_juridicos += f"<td>{coluna}</td>"
+    
+    table_juridicos += "</tr>"
+
+table_juridicos += "</table></div>"
+
+# Aplica estilo global para fundo e cores de texto
+st.markdown("""
+    <style>
+     h1, h2, h3 {
+        color: #8B4513 !important; /* Títulos e subtítulos marrom escuro */
+    }
+    </style>
+""", unsafe_allow_html=True)
+
+st.subheader("Clientes - Pessoas Jurídicas")
+# Renderiza a tabela no Streamlit
+st.markdown(table_juridicos, unsafe_allow_html=True)
+
+if '/click/' in st.query_params:
+    index = int(st.query_params['/click/'][0])
+    st.session_state[f'botao_{index}'] = True
+    st.write("Deu certo!")  # Mensagem exibida ao clicar no botão
+
+
+
+table_estrangeiros = """
+<style>
+    .table_estrangeiros {
+        width: 2000px;  /* Defina a largura total desejada */
+        border-collapse: collapse;
+    }
+    .table_estrangeiros th, .table_estrangeiros td {
+        border: 1px solid #ddd;
+        padding: 8px;
+    }
+    .table_estrangeiros th {
+        background-color: #8B4513;
+        color: white;
+    }
+    /* Definindo a largura de cada coluna */
+    .col-nome { width: 15%; }
+    .col-email { width: 20%; }
+    .col-telefone { width: 10%; }
+    .col-nascimento { width: 10%; }
+    .col-pais { width: 10%; }
+    .col-cep { width: 10%; }
+    .col-estado { width: 10%; }
+    .col-cidade { width: 10%; }
+    .col-bairro { width: 10%; }
+    .col-logradouro { width: 10%; }
+    .col-numero { width: 10%; }
+    .col-complemento { width: 10%; }
+    .col-cpf { width: 10%; }
+    .col-matricula { width: 10%; }
+    .col-cargo { width: 10%; }
+    .col-salario { width: 10%; }
+    .col-cadastro { width: 10%; }
+    /* Estilo para o contêiner com rolagem */
+    .scrollable {
+        overflow-x: auto;  /* Ativa a rolagem horizontal */
+        max-width: 100%;   /* Define a largura máxima do contêiner */
+        border: 0px solid #ddd;  /* Adiciona uma borda ao contêiner */
+        padding: 2px;  /* Adiciona um pouco de espaço interno */
+        border-radius: 5px;  /* Adiciona bordas arredondadas */
+    }
+    /* Adicionando a barra de rolagem personalizada */
+    .scrollable::-webkit-scrollbar {
+        height: 8px;  /* Altura da barra de rolagem */
+    }
+    .scrollable::-webkit-scrollbar-thumb {
+        background-color: #888;  /* Cor da barra de rolagem */
+        border-radius: 4px;  /* Borda arredondada da barra */
+    }
+    .scrollable::-webkit-scrollbar-thumb:hover {
+        background-color: #555;  /* Cor da barra de rolagem ao passar o mouse */
+    }
+</style>
+
+<div class='scrollable'>
+    <table class='table_estrangeiros'>
+        <tr>
+            <th colspan=2>Ações</th>
+            <th>Nome</th>
+            <th>Email</th>
+            <th>Telefone</th>
+            <th>Nascimento</th>
+            <th>País</th>
+            <th>Cep</th>
+            <th>Estado</th>
+            <th>Cidade</th>
+            <th>Bairro</th>
+            <th>Logradouro</th>
+            <th>Número</th>
+            <th>Complemento</th>
+            <th>Passaporte</th>
+            <th>Descrição</th>
+            <th>Cadastro</th>
+        </tr>
+"""
+
+conn = conectar_banco()
+cursor = conn.cursor()
+cursor.execute(query2)
+resultado = cursor.fetchall()
+
+# Adiciona as linhas da tabela
+for linha in resultado:
+    table_estrangeiros += f"<tr><td>Up</td><td>X</td>"
+    for i, coluna in enumerate(linha):
+        if i == 0:
+            continue
+        table_estrangeiros += f"<td>{coluna}</td>"
+    table_estrangeiros += "</tr>"
+
+table_estrangeiros += """
+    </table>
+</div>
+"""
+
+# Aplica estilo global para fundo e cores de texto
+st.markdown("""
+    <style>
+     h1, h2, h3 {
+        color: #8B4513 !important; /* Títulos e subtítulos marrom escuro */
+    }
+    </style>
+""", unsafe_allow_html=True)
+
+st.subheader("Clientes - Estrangeiros")
+# Renderiza a tabela no Streamlit
+st.markdown(table_estrangeiros, unsafe_allow_html=True)
+
+
+# SVG do ícone NotepadEdit (exemplo, substitua pelo SVG real)
+notepad_edit_svg = """
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+    <path d="M3 3h12l3 3v15a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2zm7 9v2h-2v-2h2zm4-4v2h-4V8h4zm2 10H5v-2h10v2z" />
+</svg>
+"""
+
+# Adiciona o SVG ao Streamlit
+st.markdown(notepad_edit_svg, unsafe_allow_html=True)

@@ -115,12 +115,9 @@ if select == 'Física':
                 if not campos_ok:
                     st.warning(mensagem)
                 else:
-                    try:
-                        data_nascimento_formatada =  datetime.strptime(nascimento, '%d-%m-%Y').date()
-                        crud.insert('funcionario', nome=nome, email=email, tel=tel, nascimento=data_nascimento_formatada, data_cadastro=data_formatada, pais=pais, cep=cep, estado=estado, cidade=cidade, bairro=bairro, logradouro=logradouro, numero=numero, complemento=complemento, cpf=cpf, matricula=matricula, cargo=cargo, salario=salario)
-                        st.success("Funcionário cadastrado com sucesso!")
-                    except Exception as e:
-                        st.error(f"Ocorreu um erro ao cadastrar: {e}")    
+                    data_nascimento_formatada =  datetime.strptime(nascimento, '%d-%m-%Y').date()
+                    crud.insert('funcionario', nome=nome, email=email, tel=tel, nascimento=data_nascimento_formatada, data_cadastro=data_formatada, pais=pais, cep=cep, estado=estado, cidade=cidade, bairro=bairro, logradouro=logradouro, numero=numero, complemento=complemento, cpf=cpf, matricula=matricula, cargo=cargo, salario=salario)
+                     
 
     elif select2 == 'Estrangeiro':
         with col1:
@@ -134,13 +131,9 @@ if select == 'Física':
                 if not campos_ok:
                     st.warning(mensagem)
                 else:
-                    try:
-                        data_nascimento_formatada =  datetime.strptime(nascimento, '%d-%m-%Y').date()
-                        crud.insert('estrangeiro', nome=nome, email=email, tel=tel, nascimento=data_nascimento_formatada, data_cadastro=data_formatada, pais=pais, cep=cep, estado=estado, cidade=cidade, bairro=bairro, logradouro=logradouro, numero=numero, complemento=complemento, doc_inter=doc_inter, descricao_es=descricao_es)
-                        st.success("Estrangeiro cadastrado com sucesso!")
-                    except Exception as e:
-                        st.error(f"Ocorreu um erro ao cadastrar: {e}")
-
+                    data_nascimento_formatada =  datetime.strptime(nascimento, '%d-%m-%Y').date()
+                    crud.insert('estrangeiro', nome=nome, email=email, tel=tel, nascimento=data_nascimento_formatada, data_cadastro=data_formatada, pais=pais, cep=cep, estado=estado, cidade=cidade, bairro=bairro, logradouro=logradouro, numero=numero, complemento=complemento, doc_inter=doc_inter, descricao_es=descricao_es)
+                    
 elif select == 'Jurídica':
     with col1:
         st.markdown(f"<h2 style= 'color:Orange;padding-top: 25px;'>CNPJ: </h2>", unsafe_allow_html=True)
@@ -153,10 +146,7 @@ elif select == 'Jurídica':
             if not campos_ok:
                 st.warning(mensagem)
             else:
-                try:
-                    data_nascimento_formatada =  datetime.strptime(nascimento, '%d-%m-%Y').date()
-                    crud.insert('p_juridica', nome=nome, email=email, tel=tel, nascimento=data_nascimento_formatada, data_cadastro=data_formatada, pais=pais, cep=cep, estado=estado, cidade=cidade, bairro=bairro, logradouro=logradouro, numero=numero, complemento=complemento, cnpj=cnpj, descricao=descricao)
-                    st.success("Pessoa jurídica cadastrada com sucesso!")
-                except Exception as e:
-                    st.error(f"Ocorreu um erro ao cadastrar: {e}")
+                data_nascimento_formatada =  datetime.strptime(nascimento, '%d-%m-%Y').date()
+                crud.insert('p_juridica', nome=nome, email=email, tel=tel, nascimento=data_nascimento_formatada, data_cadastro=data_formatada, pais=pais, cep=cep, estado=estado, cidade=cidade, bairro=bairro, logradouro=logradouro, numero=numero, complemento=complemento, cnpj=cnpj, descricao=descricao)
+                   
 # to continue
