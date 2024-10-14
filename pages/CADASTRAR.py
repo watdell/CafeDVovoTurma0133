@@ -2,6 +2,7 @@ import streamlit as st
 from SQL import CRUD  # Importando as operações CRUD do módulo SQL
 from setup import setup
 from utils.validacao_form import verifica_campos
+from utils.datetime_converter import convert_to_datetime_format
 from random import randrange
 import requests
 from datetime import datetime
@@ -111,12 +112,12 @@ if select == 'Física':
             cargo = st.text_input('', key='carg')
             salario = st.text_input('', key='sala')
             if st.button('CADASTRAR', key='cadfun'):
-                campos_ok, mensagem = verifica_campos(nome, email, tel, nascimento, pais, cep, estado, cidade, bairro, logradouro, numero, complemento, select=select, cpf=cpf, tipo=select2, matricula=matricula, cargo=cargo, salario=salario)
+                campos_ok, formatted_salary, mensagem = verifica_campos(nome, email, tel, nascimento, pais, cep, estado, cidade, bairro, logradouro, numero, complemento, select=select, cpf=cpf, tipo=select2, matricula=matricula, cargo=cargo, salario=salario)
                 if not campos_ok:
                     st.warning(mensagem)
                 else:
-                    data_nascimento_formatada =  datetime.strptime(nascimento, '%d-%m-%Y').date()
-                    crud.insert('funcionario', nome=nome, email=email, tel=tel, nascimento=data_nascimento_formatada, data_cadastro=data_formatada, pais=pais, cep=cep, estado=estado, cidade=cidade, bairro=bairro, logradouro=logradouro, numero=numero, complemento=complemento, cpf=cpf, matricula=matricula, cargo=cargo, salario=salario)
+                    data_nascimento_formatada =  convert_to_datetime_format(nascimento)
+                    crud.insert('funcionario', nome=nome, email=email, tel=tel, nascimento=data_nascimento_formatada, data_cadastro=data_formatada, pais=pais, cep=cep, estado=estado, cidade=cidade, bairro=bairro, logradouro=logradouro, numero=numero, complemento=complemento, cpf=cpf, matricula=matricula, cargo=cargo, salario=formatted_salary)
                      
 
     elif select2 == 'Estrangeiro':
@@ -127,11 +128,11 @@ if select == 'Física':
             doc_inter = st.text_input('', key='cnpj')
             descricao_es = st.text_input('', key='desc')
             if st.button('CADASTRAR', key='cadest'):
-                campos_ok, mensagem = verifica_campos(nome, email, tel, nascimento, pais, cep, estado, cidade, bairro, logradouro, numero, complemento, select=select, tipo = select2, doc_inter = doc_inter, descricao_es = descricao_es)
+                campos_ok, formatted_salary, mensagem = verifica_campos(nome, email, tel, nascimento, pais, cep, estado, cidade, bairro, logradouro, numero, complemento, select=select, tipo = select2, doc_inter = doc_inter, descricao_es = descricao_es)
                 if not campos_ok:
                     st.warning(mensagem)
                 else:
-                    data_nascimento_formatada =  datetime.strptime(nascimento, '%d-%m-%Y').date()
+                    data_nascimento_formatada =  convert_to_datetime_format(nascimento)
                     crud.insert('estrangeiro', nome=nome, email=email, tel=tel, nascimento=data_nascimento_formatada, data_cadastro=data_formatada, pais=pais, cep=cep, estado=estado, cidade=cidade, bairro=bairro, logradouro=logradouro, numero=numero, complemento=complemento, doc_inter=doc_inter, descricao_es=descricao_es)
                     
 elif select == 'Jurídica':
@@ -142,11 +143,11 @@ elif select == 'Jurídica':
         cnpj = st.text_input('', key='cnpj')
         descricao = st.text_input('', key='desc')
         if st.button('CADASTRAR', key='cadjur'):
-            campos_ok, mensagem = verifica_campos(nome, email, tel, nascimento, pais, cep, estado, cidade, bairro, logradouro, numero, complemento, select=select, tipo=None, cnpj=cnpj, descricao=descricao)
+            campos_ok, formatted_salary, mensagem = verifica_campos(nome, email, tel, nascimento, pais, cep, estado, cidade, bairro, logradouro, numero, complemento, select=select, tipo=None, cnpj=cnpj, descricao=descricao)
             if not campos_ok:
                 st.warning(mensagem)
             else:
-                data_nascimento_formatada =  datetime.strptime(nascimento, '%d-%m-%Y').date()
+                data_nascimento_formatada =  convert_to_datetime_format(nascimento)
                 crud.insert('p_juridica', nome=nome, email=email, tel=tel, nascimento=data_nascimento_formatada, data_cadastro=data_formatada, pais=pais, cep=cep, estado=estado, cidade=cidade, bairro=bairro, logradouro=logradouro, numero=numero, complemento=complemento, cnpj=cnpj, descricao=descricao)
                    
 # to continue

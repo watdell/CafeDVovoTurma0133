@@ -384,7 +384,7 @@ class CRUD:
         UPDATE pessoa
         SET nome = '{novos_dados.get("Nome")}',
             email = '{novos_dados.get("E-mail")}',
-            data_nascimento = '{novos_dados.get("Data de Nascimento")}'
+            data_nascimento = '{novos_dados.get("Data de nascimento")}'
         WHERE pessoa_id = {pessoa_id};
         """
 

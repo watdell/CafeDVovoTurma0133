@@ -1,10 +1,12 @@
+# Não alterar os valores sem alterar suas referências em SQL.py, e em VER CADASTRO.PY!
+
 def titulo(nome):
     dicionario = {
         'pessoa_id': 'ID',
         'nome': 'Nome',
         'email': 'E-mail',
         'telefone': 'Telefone',
-        'data_nascimento': 'Data de Nascimento',
+        'data_nascimento': 'Data de nascimento',
         'pais': 'País',
         'cep': 'CEP',
         'estado': 'UF',
@@ -24,3 +26,5 @@ def titulo(nome):
         'salario': 'Salário',   
     }
     return dicionario[nome]
+
+# Não alterar os valores sem alterar suas referências em SQL.py, e em VER CADASTRO.PY!

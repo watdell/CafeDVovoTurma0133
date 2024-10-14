@@ -1,6 +1,8 @@
 from setup import setup
 from SQL import CRUD
 from utils.db_conversao_campo_titulo import titulo
+from utils.conversao_valor_monetario import convert_float_to_monetary, convert_monetary_to_float
+from utils.datetime_converter import convert_from_datetime_to_string, convert_to_datetime_format
 import pandas as pd
 import streamlit as st
 
@@ -28,6 +30,16 @@ def exibir_com_acoes(df, categoria):
     for index, row in df.iterrows():
         cols = st.columns(3)
         for i, col in enumerate(df.columns):
+            
+            if col == 'data_nascimento': # converte de data americana pra brasileira 
+                date_american_format = row[col]
+                data_brazilian_format = convert_from_datetime_to_string(date_american_format)
+                row[col] = data_brazilian_format
+            if col == 'data_cadastro': # converte de data americana pra brasileira 
+                date_american_format = row[col]
+                data_brazilian_format = convert_from_datetime_to_string(date_american_format)
+                row[col] = data_brazilian_format
+            
             if i < 6:
                 cols[0].write(f"**{titulo(col)}:** {row[col]}")
             elif i < 12:
@@ -62,18 +74,41 @@ def exibir_com_acoes(df, categoria):
                                 cols = st.columns(3)
                                 for i, col in enumerate(df.columns):
                                     nome_campo = titulo(col)
+                                    
+                                    if col == 'data_nascimento': # converte de data americana pra brasileira 
+                                        date_american_format = edit_row[i]
+                                        data_brazilian_format = convert_from_datetime_to_string(date_american_format)
+                                        edit_row[i] = data_brazilian_format
+                                    
                                     if i < 6:
                                         novo_valor = cols[0].text_input(f"**Campo {i + 1}:**", value=edit_row[i], key=f"{categoria}_{index}_edit_{i}")
                                     elif i < 12:
                                         novo_valor = cols[1].text_input(f"**Campo {i + 1}:**", value=edit_row[i], key=f"{categoria}_{index}_edit_{i}")
                                     else:
-                                        novo_valor = cols[2].text_input(f"**Campo {i + 1}:**", value=edit_row[i], key=f"{categoria}_{index}_edit_{i}")
+                                        if col == "salario": # Isso aqui é pra mudar o valor de float armazenado no banco de dados assim 0000.00 para moeda BR com R$ 0.000,00 para visualização na página
+                                            not_monetary_value = edit_row[i]
+                                            monetary_value = convert_float_to_monetary(not_monetary_value)
+                                            novo_valor = cols[2].text_input(f"**Campo {i + 1}:**", value=monetary_value, key=f"{categoria}_{index}_edit_{i}")
+                                        else:
+                                            novo_valor = cols[2].text_input(f"**Campo {i + 1}:**", value=edit_row[i], key=f"{categoria}_{index}_edit_{i}")
                                     novos_dados[nome_campo] = novo_valor
 
                             # Botão dentro do form que não causa reload
                             submit_button = st.form_submit_button("Salvar")
 
                             if submit_button:
+                                if 'Salário' in novos_dados: # desconverte de valor moeda para valor float pra armazenar no banco de dados
+                                    monetary_value = novos_dados['Salário']
+                                    not_monetary_value = convert_monetary_to_float(monetary_value)
+                                    novos_dados['Salário'] = not_monetary_value
+                                    
+                                if 'Data de nascimento' in novos_dados: # converte de data brasileira para americana (p/ armazenar no DB)
+                                    date_brazilian_format = novos_dados['Data de nascimento']
+                                    print(date_brazilian_format)
+                                    data_american_format = convert_to_datetime_format(date_brazilian_format)
+                                    novos_dados['Data de nascimento'] = data_american_format
+                                    print(data_american_format)
+                                
                                 try:
                                     crud.update_user_information(row['pessoa_id'], novos_dados)
                                     st.success("Atualizado com sucesso!")
@@ -91,7 +126,6 @@ def exibir_com_acoes(df, categoria):
             st.warning("Coluna 'pessoa_id' não encontrada na linha.")
 
         st.write("---")
-
 
 
 # Sidebar com filtros
@@ -125,4 +159,3 @@ elif tipo_cadastro == "Funcionários":
 st.sidebar.markdown("## Ações")
 if st.sidebar.button("Adicionar Novo Cadastro"):
     st.write("Página de Cadastro em construção...")
-
