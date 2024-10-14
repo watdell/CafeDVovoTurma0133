@@ -1,6 +1,7 @@
 import re
 from datetime import datetime
 from utils.datetime_converter import convert_to_datetime_format
+from utils.conversao_valor_monetario import convert_monetary_to_float
 
 def verifica_campos(nome, email, telefone, nascimento, pais, cep, estado, cidade, bairro, logradouro, numero, complemento, **kwargs):
     formatted_salary = 0
@@ -9,10 +10,14 @@ def verifica_campos(nome, email, telefone, nascimento, pais, cep, estado, cidade
         if kwargs['tipo'] == "Funcionário":
             if not kwargs.get('cpf') or not kwargs.get('matricula') or not kwargs.get('cargo'):
                 return False, "Todos os campos de funcionário devem ser preenchidos."
-            salario_formatado = formata_salario(kwargs.get('salario'))
+            
+            salario_formatado = convert_monetary_to_float(kwargs.get('salario'))
+            
+            if not salario_formatado:
+                return False, "Valor inválido para o campo salário"
+            
             formatted_salary = salario_formatado
-            if not salario_formatado or not valida_salario(salario_formatado):
-                return False, "O salário deve ser um número positivo."
+         
         if kwargs['tipo'] == "Estrangeiro":
             if not kwargs.get('doc_inter') or not kwargs.get('descricao_es'):
                 return False, "Todos os campos de estrangeiro devem ser preenchidos."
@@ -31,7 +36,7 @@ def verifica_campos(nome, email, telefone, nascimento, pais, cep, estado, cidade
     if not nascimento or not convert_to_datetime_format(nascimento):
         return False, "", "Por favor, insira uma data de nascimento válida no formato DD-MM-YYYY."
     if not pais:
-        return False, "O campo 'País' é obrigatório."
+        return False, "", "O campo 'País' é obrigatório."
     if not cep:
         return False, "", "O campo 'CEP' é obrigatório."
     if not estado:
@@ -54,27 +59,6 @@ def verifica_campos(nome, email, telefone, nascimento, pais, cep, estado, cidade
 
     return True, formatted_salary, "Todos os campos foram preenchidos corretamente!"
 
-
-def formata_salario(salario):
-    if salario:
-        # Remove o 'R$', espaços em branco
-        salario = salario.replace("R$", "").replace(" ", "")
-        
-        # Se houver um ponto, verificar sua posição
-        if '.' in salario:
-            partes = salario.split('.')
-            if len(partes) > 1 and len(partes[-1]) <= 2:
-                # Mantém o ponto se estiver antes de duas casas decimais
-                return salario.replace(",", ".")
-            else:
-                # Se houver vírgula, substitui por ponto e remove outros pontos
-                salario = salario.replace(".", "").replace(",", ".")
-        else:
-            # Se houver vírgula, substitui por ponto
-            salario = salario.replace(",", ".")
-        
-        return salario
-    return None
 
 def valida_salario(salario):
     try:

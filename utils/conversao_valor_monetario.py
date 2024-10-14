@@ -8,7 +8,7 @@ def convert_monetary_to_float(salario):
             partes = salario.split('.')
             if len(partes) > 1 and len(partes[-1]) <= 2:
                 # Mantém o ponto se estiver antes de duas casas decimais
-                return salario.replace(",", ".")
+                salario.replace(",", ".")
             else:
                 # Se houver vírgula, substitui por ponto e remove outros pontos
                 salario = salario.replace(".", "").replace(",", ".")
@@ -16,7 +16,12 @@ def convert_monetary_to_float(salario):
             # Se houver vírgula, substitui por ponto
             salario = salario.replace(",", ".")
         
-        return salario
+        try:
+            salary = float(salario)
+            return salary
+        except Exception as e:
+            return False
+            
     return None
 
 
