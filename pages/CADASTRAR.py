@@ -99,7 +99,7 @@ if select == 'Física':
         st.markdown(f"<h2 style= 'color:Orange;padding-top: 25px;'>TIPO: </h2>", unsafe_allow_html=True)
     with col2:
         cpf = st.text_input('', key='cpf')
-        select2 = st.selectbox('', ['Nenhum', 'Funcionário', 'Estrangeiro'], key='selec2')
+        select2 = st.selectbox('', ['Nenhum', 'Funcionário', 'Estrangeiro','Fornecedor'], key='selec2')
 
     # Lógica para tipo de funcionário
     if select2 == 'Funcionário':
